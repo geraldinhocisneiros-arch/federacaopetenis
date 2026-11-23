@@ -48,7 +48,7 @@ npm run dev
 ### 2. Cloudflare Pages
 1. *Workers & Pages → Create → Pages → Connect to Git* e escolha este repositório.
 2. Build command: `npm run build`. Output directory: `dist`.
-3. Variáveis de ambiente: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+3. Não precisa de variáveis de ambiente: a URL e a chave pública do Supabase já estão em `.env.production`.
 4. O arquivo `public/_redirects` já trata as rotas do app (SPA).
 
 ## Estrutura
