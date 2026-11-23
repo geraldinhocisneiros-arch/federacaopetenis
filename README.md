@@ -45,11 +45,11 @@ npm run dev
    update perfis set papel = 'admin' where email = 'seu-email@exemplo.com';
    ```
 
-### 2. Cloudflare Pages
-1. *Workers & Pages → Create → Pages → Connect to Git* e escolha este repositório.
-2. Build command: `npm run build`. Output directory: `dist`.
+### 2. Cloudflare (Workers)
+1. *Workers & Pages → Create → Import a repository* e escolha este repositório.
+2. Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
 3. Não precisa de variáveis de ambiente: a URL e a chave pública do Supabase já estão em `.env.production`.
-4. O arquivo `public/_redirects` já trata as rotas do app (SPA).
+4. O `wrangler.jsonc` publica a pasta `dist` e faz as rotas do app (SPA) funcionarem.
 
 ## Estrutura
 

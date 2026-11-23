@@ -1,0 +1,10 @@
+// Configuração do Cloudflare (Workers com arquivos estáticos)
+{
+  "name": "federacaopetenis",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./dist",
+    // Rotas como /torneios/123 abrem o app (SPA)
+    "not_found_handling": "single-page-application"
+  }
+}
