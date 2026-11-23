@@ -9,6 +9,7 @@ import PainelCategorias from './Categorias'
 import PainelPontuacao from './Pontuacao'
 import PainelRanking from './RankingAdmin'
 import PainelUsuarios from './Usuarios'
+import MinhaConta from './MinhaConta'
 
 export default function Painel() {
   const { session, perfil, carregando, isAdmin, isGestor, sair } = useAuth()
@@ -23,6 +24,7 @@ export default function Painel() {
     { to: 'pontuacao', rotulo: 'Pontuação', ok: isAdmin },
     { to: 'ranking', rotulo: 'Ranking', ok: isAdmin },
     { to: 'usuarios', rotulo: 'Usuários', ok: isAdmin },
+    { to: 'conta', rotulo: 'Minha conta', ok: true },
   ].filter((i) => i.ok)
 
   return (
@@ -59,6 +61,7 @@ export default function Painel() {
             <Route path="torneios/:id" element={<TorneioEditor />} />
             <Route path="atletas" element={<PainelAtletas />} />
             <Route path="clubes" element={<PainelClubes />} />
+            <Route path="conta" element={<MinhaConta />} />
             {isAdmin && (
               <>
                 <Route path="categorias" element={<PainelCategorias />} />

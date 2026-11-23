@@ -1,12 +1,22 @@
-// Configuração do Cloudflare (Workers com arquivos estáticos)
+// Configuração do Cloudflare (Worker + arquivos estáticos do site)
 {
   "name": "federacaopetenis",
+  "main": "worker/index.ts",
   "compatibility_date": "2025-06-01",
   // Publica no endereço gratuito *.workers.dev
   "workers_dev": true,
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     // Rotas como /torneios/123 abrem o app (SPA)
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    // Só /api/* passa pelo código do worker; o resto é servido direto
+    "run_worker_first": ["/api/*"]
+  },
+  // Dados públicos. A chave SECRETA vai em Settings > Variables and Secrets
+  // com o nome SUPABASE_SECRET_KEY (tipo Secret), nunca aqui.
+  "vars": {
+    "SUPABASE_URL": "https://twrwzdpthafjnlqasjwn.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_Q46qVtDfVgqVW7fptbFBQg_PsySls5a"
   }
 }

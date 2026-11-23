@@ -50,6 +50,7 @@ npm run dev
 2. Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
 3. Não precisa de variáveis de ambiente: a URL e a chave pública do Supabase já estão em `.env.production`.
 4. O `wrangler.jsonc` publica a pasta `dist` e faz as rotas do app (SPA) funcionarem.
+5. **Cadastro de usuários pelo painel:** em *Settings → Variables and Secrets*, adicione `SUPABASE_SECRET_KEY` (tipo **Secret**) com a chave `sb_secret_...` do Supabase (*Project Settings → API Keys*). Ela fica só no servidor (`worker/index.ts`), nunca no navegador.
 
 ## Estrutura
 
