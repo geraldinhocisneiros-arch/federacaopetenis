@@ -21,11 +21,14 @@ export default function Layout() {
   const navCls = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 rounded-lg text-sm font-semibold transition ${isActive ? 'bg-white/15 text-white' : 'text-white/80 hover:text-white hover:bg-white/10'}`
 
+  // O painel tem layout próprio (menu lateral com logo); sem cabeçalho e rodapé do site
+  if (noPainel) return <div className="min-h-screen"><Outlet /></div>
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-navy-800 text-white sticky top-0 z-40 shadow">
         <div className="h-1 bg-gradient-to-r from-wave via-wave-light to-ball" />
-        <div className={`${noPainel ? "px-4 lg:px-6" : "max-w-6xl mx-auto px-4"} h-16 flex items-center gap-4`}>
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
           <Link to="/" className="flex items-center gap-3 shrink-0" onClick={() => setMenu(false)}>
             <img src="/emblema-fpet.png" alt="" className="h-11 w-11 rounded-full bg-white" />
             <div className="leading-tight">
@@ -61,7 +64,7 @@ export default function Layout() {
         </div>
       )}
 
-      <main className={noPainel ? 'flex-1 w-full' : 'flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8'}>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8">
         <Outlet />
       </main>
 
