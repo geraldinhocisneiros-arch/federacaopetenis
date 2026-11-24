@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { supabaseConfigurado } from '../lib/supabase'
 
@@ -16,6 +16,7 @@ const links = [
 export default function Layout() {
   const { session, isGestor, isAtleta } = useAuth()
   const [menu, setMenu] = useState(false)
+  const noPainel = useLocation().pathname.startsWith('/painel')
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 rounded-lg text-sm font-semibold transition ${isActive ? 'bg-white/15 text-white' : 'text-white/80 hover:text-white hover:bg-white/10'}`
@@ -60,7 +61,7 @@ export default function Layout() {
         </div>
       )}
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8">
+      <main className={`flex-1 w-full ${noPainel ? 'max-w-7xl' : 'max-w-6xl'} mx-auto px-4 py-6 sm:py-8`}>
         <Outlet />
       </main>
 

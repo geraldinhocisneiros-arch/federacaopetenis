@@ -36,8 +36,8 @@ export default function PainelPublicacoes() {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-bold">Publicações</h2>
-        <button className="btn-primary" onClick={() => { setErro(null); setEditando({ tipo: 'noticia', publicado: false, destaque: false }) }}>+ Nova publicação</button>
+        <h2 className="text-xl font-bold">Notícias e publicações</h2>
+        <button className="btn-primary" onClick={() => { setErro(null); setEditando({ tipo: 'noticia', publicado: false, destaque: false }) }}>+ Nova notícia</button>
       </div>
       <p className="text-sm text-slate-500 mb-4">Notícias, comunicados, resultados, regulamentos e editais exibidos no site em <Link to="/noticias" className="link">Notícias</Link>.</p>
       <Erro msg={!editando ? erro : null} />
