@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import EstatisticasAtleta from '../components/EstatisticasAtleta'
 import { supabase } from '../lib/supabase'
 import { ok, useAsync } from '../lib/useAsync'
 import { formatarData, formatarPlacar, nomeRodada, rotuloFase } from '../lib/tenis'
 import type { Atleta, Clube, PartidaDetalhe } from '../lib/types'
-import { Avatar, Erro, Spinner, Variacao, Vazio } from '../components/ui'
+import { Avatar, Erro, Spinner, Tabs, Variacao, Vazio } from '../components/ui'
 import GraficoPosicao, { type PontoHist } from '../components/GraficoPosicao'
 
 interface RankAtleta { categoria_id: string; categoria_nome: string; posicao: number; pontos: number; posicao_anterior: number | null; total: number }
@@ -21,6 +23,7 @@ interface InscTorneio {
 
 export default function AtletaPagina() {
   const { id } = useParams()
+  const [aba, setAba] = useState<'geral' | 'estatisticas'>('geral')
   const dados = useAsync(async () => {
     const atleta = ok(await supabase.from('atletas').select('*, clubes(*)').eq('id', id!).single()) as Atleta & { clubes: Clube | null }
     const [rank, hist, insc, lanc, fil] = await Promise.all([
@@ -89,6 +92,13 @@ export default function AtletaPagina() {
           <Stat valor={inscricoes.length} rotulo="Torneios" />
         </div>
       </div>
+
+      <Tabs valor={aba} onChange={setAba} itens={[
+        { valor: 'geral', rotulo: 'Ranking e resultados' },
+        { valor: 'estatisticas', rotulo: 'Estatísticas' },
+      ]} />
+
+      {aba === 'estatisticas' ? <EstatisticasAtleta atletaId={atleta.id} /> : <>
 
       <section>
         <h2 className="font-bold text-lg mb-3">Ranking</h2>
@@ -165,6 +175,7 @@ export default function AtletaPagina() {
           </div>
         )}
       </section>
+      </>}
     </div>
   )
 }

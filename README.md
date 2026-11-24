@@ -16,6 +16,9 @@ Sistema de ranking, torneios e chaves da FPET.
 | Filiação | Admin (clubes consultam) | Anuidades por ano (atleta/academia), filiação individual ou em lote, nº de registro, situação pública no perfil do atleta |
 | Financeiro | Admin e clubes | Recebimentos, pagamentos, baixa (com crédito e pagamento a maior), estorno, isenção, vouchers, créditos. Clube dá baixa nas inscrições que ele recebe |
 | Publicações | Admin | Notícias, comunicados, resultados, regulamentos e editais em `/noticias` |
+| Estatísticas | Qualquer pessoa | `/estatisticas`: líderes por vitórias, aproveitamento, títulos, games, tiebreaks (por ano/categoria/modalidade). No perfil do atleta, aba com filtros por ano, torneio e categoria, resultado por torneio, games vencidos/perdidos, confronto direto |
+| Área do atleta | Atleta | Cria o acesso no site e se vincula ao cadastro com CPF + nascimento (na hora, se bater; senão a federação aprova). Vê estatísticas, filiação, cobranças e eventos; atualiza contato e foto |
+| Cursos e eventos | Todos (federação e academias publicam) | `/eventos`: agenda de cursos, clínicas, capacitações. Inscrição pelo site com vagas, lista de espera e cobrança, link externo ou só divulgação |
 
 ### Fluxo de um torneio
 1. Clube cria o torneio e adiciona as categorias (da lista oficial da federação).
