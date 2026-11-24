@@ -9,6 +9,7 @@ interface AuthCtx {
   carregando: boolean
   isAdmin: boolean
   isGestor: boolean
+  isAtleta: boolean
   recarregarPerfil: () => Promise<void>
   sair: () => Promise<void>
 }
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         carregando,
         isAdmin,
         isGestor,
+        isAtleta: !!perfil?.atleta_id,
         recarregarPerfil: () => carregarPerfil(session),
         sair: async () => {
           await supabase.auth.signOut()

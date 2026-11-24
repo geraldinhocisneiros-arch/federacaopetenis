@@ -18,6 +18,7 @@ export const CATEGORIAS_LANC: Record<CategoriaLancamento, string> = {
   filiacao_academia: 'Filiação de academia',
   inscricao_torneio: 'Inscrição em torneio',
   taxa_torneio: 'Taxa federativa de torneio',
+  evento: 'Curso / evento',
   patrocinio: 'Patrocínio',
   arbitragem: 'Arbitragem',
   premiacao: 'Premiação',

@@ -19,15 +19,17 @@ export default function PainelVisao() {
   const ano = anoAtual()
   const [erro, setErro] = useState<string | null>(null)
   const dados = useAsync(async () => {
-    const [r, t, taxas] = await Promise.all([
+    const [r, t, taxas, sol] = await Promise.all([
       supabase.rpc('resumo_adm', { p_ano: ano }),
       supabase.from('torneios').select('*, clubes(nome)').in('status', ['encerrado', 'homologado'])
         .eq('pontua_ranking', true).gte('data_inicio', `${ano - 1}-01-01`).order('data_inicio', { ascending: false }),
       supabase.from('fin_lancamentos').select('torneio_id').eq('categoria', 'taxa_torneio').is('recebedor_clube_id', null).neq('status', 'cancelado'),
+      supabase.rpc('solicitacoes_pendentes'),
     ])
     const comTaxa = new Set((ok(taxas) as { torneio_id: string }[]).map((x) => x.torneio_id))
     return {
       r: ok(r) as Resumo,
+      solicitacoes: Number(sol.data ?? 0),
       semTaxa: (ok(t) as TorneioTaxa[]).filter((x) => !comTaxa.has(x.id)),
       homologar: (ok(t) as TorneioTaxa[]).filter((x) => x.status === 'encerrado'),
     }
@@ -41,7 +43,7 @@ export default function PainelVisao() {
 
   if (dados.loading) return <Spinner />
   if (!dados.data) return <Erro msg={dados.error} />
-  const { r, semTaxa, homologar } = dados.data
+  const { r, semTaxa, homologar, solicitacoes } = dados.data
 
   return (
     <div className="space-y-6">
@@ -95,6 +97,7 @@ export default function PainelVisao() {
         </div>
         <div className="flex flex-wrap gap-3 mt-3 text-sm">
           <span className="badge bg-amber-100 text-amber-800">{r.torneios_andamento} torneio(s) com inscrições abertas / em andamento</span>
+          {solicitacoes > 0 && <Link to="/painel/usuarios" className="badge bg-red-100 text-red-800">{solicitacoes} pedido(s) de acesso de atleta</Link>}
           {r.publicacoes_rascunho > 0 && <Link to="/painel/publicacoes" className="badge bg-slate-100 text-slate-700">{r.publicacoes_rascunho} publicação(ões) em rascunho</Link>}
         </div>
       </section>

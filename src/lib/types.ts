@@ -8,6 +8,7 @@ export interface Perfil {
   email: string | null
   papel: Papel
   clube_id: string | null
+  atleta_id: string | null
 }
 
 export interface Clube {
@@ -173,7 +174,7 @@ export type StatusFiliacao = 'pendente' | 'ativa' | 'isenta' | 'cancelada'
 export type StatusLancamento = 'aberto' | 'pago' | 'isento' | 'cancelado'
 export type FormaPagamento = 'pix' | 'boleto' | 'dinheiro' | 'transferencia' | 'cartao' | 'credito' | 'voucher' | 'outro'
 export type CategoriaLancamento =
-  | 'filiacao_atleta' | 'filiacao_academia' | 'inscricao_torneio' | 'taxa_torneio' | 'patrocinio'
+  | 'filiacao_atleta' | 'filiacao_academia' | 'inscricao_torneio' | 'taxa_torneio' | 'evento' | 'patrocinio'
   | 'arbitragem' | 'premiacao' | 'estrutura' | 'administrativo' | 'outros'
 
 export interface Configuracoes {
@@ -295,5 +296,119 @@ export interface Publicacao {
   publicado_em: string | null
   torneio_id: string | null
   autor_id: string | null
+  criado_em: string
+}
+
+// ---------------------------------------------------------------------
+// Atleta, estatísticas e eventos
+// ---------------------------------------------------------------------
+export interface PartidaAtleta {
+  atleta_id: string
+  partida_id: string
+  torneio_id: string
+  torneio_nome: string
+  torneio_status: StatusTorneio
+  torneio_categoria_id: string
+  categoria_id: string
+  categoria_nome: string
+  modalidade: 'simples' | 'duplas'
+  rodada: number
+  total_rodadas: number
+  data: string | null
+  ano: number | null
+  lado: 1 | 2
+  venceu: boolean
+  tipo_resultado: 'normal' | 'wo' | 'desistencia'
+  placar: Placar
+  parceiro_id: string | null
+  adversario: string
+  adversario_id: string
+  adversario_parceiro_id: string | null
+  sets_pro: number
+  sets_contra: number
+  games_pro: number
+  games_contra: number
+  tiebreaks: number
+  tiebreaks_vencidos: number
+  super_tiebreak: boolean
+}
+
+export interface LiderEstatistica {
+  atleta_id: string
+  nome: string
+  clube_nome: string | null
+  torneios: number
+  jogos: number
+  vitorias: number
+  derrotas: number
+  aproveitamento: number | null
+  sets_pro: number
+  sets_contra: number
+  games_pro: number
+  games_contra: number
+  tiebreaks_vencidos: number
+  tiebreaks: number
+  titulos: number
+  finais: number
+  vitorias_wo: number
+}
+
+export interface SolicitacaoAtleta {
+  id: string
+  perfil_id: string
+  nome: string
+  cpf: string
+  data_nascimento: string | null
+  sexo: 'M' | 'F' | null
+  telefone: string | null
+  clube_id: string | null
+  atleta_id: string | null
+  status: 'pendente' | 'aprovada' | 'recusada'
+  motivo: string | null
+  criado_em: string
+}
+
+export type TipoEvento = 'curso' | 'clinica' | 'capacitacao' | 'arbitragem' | 'palestra' | 'festival' | 'torneio_social' | 'evento'
+
+export interface Evento {
+  id: string
+  titulo: string
+  tipo: TipoEvento
+  descricao: string | null
+  publico_alvo: string | null
+  local: string | null
+  endereco: string | null
+  cidade: string | null
+  data_inicio: string
+  data_fim: string | null
+  horario: string | null
+  clube_id: string | null
+  organizador: string | null
+  contato: string | null
+  imagem_url: string | null
+  valor: number
+  vagas: number | null
+  inscricoes_ate: string | null
+  inscricao_modo: 'sistema' | 'externo' | 'sem'
+  link_externo: string | null
+  status: 'rascunho' | 'publicado' | 'cancelado'
+}
+
+export interface EventoLista extends Evento {
+  organizador_nome: string
+  inscritos: number
+}
+
+export interface EventoInscricao {
+  id: string
+  evento_id: string
+  perfil_id: string | null
+  atleta_id: string | null
+  nome: string
+  email: string | null
+  telefone: string | null
+  observacao: string | null
+  status: 'confirmada' | 'lista_espera' | 'cancelada'
+  lancamento_id: string | null
   criado_em: string
 }

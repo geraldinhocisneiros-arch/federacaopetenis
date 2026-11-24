@@ -5,6 +5,7 @@ import { useAuth } from '../../lib/auth'
 import { chamarApi, gerarSenha } from '../../lib/api'
 import type { Clube, Papel, Perfil } from '../../lib/types'
 import { Aviso, Campo, Erro, Modal, Spinner } from '../../components/ui'
+import SolicitacoesAtleta from './SolicitacoesAtleta'
 
 const ROTULO_PAPEL: Record<Papel, string> = { pendente: 'Pendente', clube: 'Clube', admin: 'Federação (admin)' }
 
@@ -15,10 +16,10 @@ export default function PainelUsuarios() {
   const [credencial, setCredencial] = useState<{ email: string; senha: string; titulo: string } | null>(null)
   const dados = useAsync(async () => {
     const [p, c] = await Promise.all([
-      supabase.from('perfis').select('*').order('criado_em', { ascending: false }),
+      supabase.from('perfis').select('*, atletas(nome)').order('criado_em', { ascending: false }),
       supabase.from('clubes').select('id,nome').order('nome'),
     ])
-    return { perfis: ok(p) as Perfil[], clubes: ok(c) as Clube[] }
+    return { perfis: ok(p) as (Perfil & { atletas: { nome: string } | null })[], clubes: ok(c) as Clube[] }
   }, [])
 
   async function atualizar(id: string, mud: Partial<Perfil>) {
@@ -51,13 +52,14 @@ export default function PainelUsuarios() {
         <button className="btn-primary" onClick={() => setNovo(true)}>+ Cadastrar usuário</button>
       </div>
       <p className="text-sm text-slate-500 mb-4">
-        Cadastre quem vai operar o sistema (equipe da federação e responsáveis dos clubes). Usuários “Clube” só gerem os torneios do próprio clube.
+        Cadastre quem vai operar o sistema (equipe da federação e responsáveis dos clubes). Usuários “Clube” só gerem os torneios do próprio clube. Atletas criam o próprio acesso pelo site e se vinculam ao cadastro com CPF e nascimento.
       </p>
+      <SolicitacoesAtleta onMudou={() => dados.reload(true)} />
       <Erro msg={erro ?? dados.error} />
       {dados.loading ? <Spinner /> : (
         <div className="card overflow-x-auto mt-2">
           <table className="table">
-            <thead><tr><th>Usuário</th><th>Papel</th><th>Clube</th><th></th></tr></thead>
+            <thead><tr><th>Usuário</th><th>Papel</th><th>Clube</th><th className="hidden md:table-cell">Atleta</th><th></th></tr></thead>
             <tbody>
               {dados.data?.perfis.map((p) => {
                 const eu = p.id === session?.user.id
@@ -74,6 +76,9 @@ export default function PainelUsuarios() {
                         <option value="">—</option>
                         {dados.data!.clubes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
                       </select>
+                    </td>
+                    <td className="hidden md:table-cell text-sm">
+                      {p.atletas ? <>{p.atletas.nome} <button className="link text-xs" onClick={() => confirm(`Desvincular ${p.email} do atleta ${p.atletas!.nome}?`) && atualizar(p.id, { atleta_id: null })}>desvincular</button></> : <span className="text-slate-400">—</span>}
                     </td>
                     <td className="text-right whitespace-nowrap">
                       <button className="btn-ghost btn-sm" onClick={() => redefinirSenha(p)}>Nova senha</button>

@@ -5,14 +5,16 @@ import { supabaseConfigurado } from '../lib/supabase'
 
 const links = [
   { to: '/ranking', rotulo: 'Ranking' },
+  { to: '/estatisticas', rotulo: 'Estatísticas' },
   { to: '/torneios', rotulo: 'Torneios' },
   { to: '/atletas', rotulo: 'Atletas' },
   { to: '/clubes', rotulo: 'Academias' },
+  { to: '/eventos', rotulo: 'Cursos e eventos' },
   { to: '/noticias', rotulo: 'Notícias' },
 ]
 
 export default function Layout() {
-  const { session, isGestor } = useAuth()
+  const { session, isGestor, isAtleta } = useAuth()
   const [menu, setMenu] = useState(false)
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
@@ -30,20 +32,20 @@ export default function Layout() {
               <div className="text-[10px] uppercase tracking-widest text-white/70 hidden sm:block">Federação Pernambucana de Tênis</div>
             </div>
           </Link>
-          <nav className="hidden md:flex items-center gap-1 ml-auto">
+          <nav className="hidden lg:flex items-center gap-1 ml-auto">
             {links.map((l) => <NavLink key={l.to} to={l.to} className={navCls}>{l.rotulo}</NavLink>)}
             {session ? (
-              <NavLink to="/painel" className={navCls}>{isGestor ? 'Painel' : 'Minha conta'}</NavLink>
+              <NavLink to="/painel" className={navCls}>{isGestor ? 'Painel' : isAtleta ? 'Minha área' : 'Minha conta'}</NavLink>
             ) : (
               <Link to="/entrar" className="btn-ball btn-sm ml-2">Entrar</Link>
             )}
           </nav>
-          <button className="md:hidden ml-auto p-2 cursor-pointer" onClick={() => setMenu(!menu)} aria-label="Menu">
+          <button className="lg:hidden ml-auto p-2 cursor-pointer" onClick={() => setMenu(!menu)} aria-label="Menu">
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
           </button>
         </div>
         {menu && (
-          <nav className="md:hidden border-t border-white/10 px-4 py-2 flex flex-col">
+          <nav className="lg:hidden border-t border-white/10 px-4 py-2 flex flex-col">
             {links.map((l) => <NavLink key={l.to} to={l.to} className={navCls} onClick={() => setMenu(false)}>{l.rotulo}</NavLink>)}
             <NavLink to={session ? '/painel' : '/entrar'} className={navCls} onClick={() => setMenu(false)}>
               {session ? 'Painel' : 'Entrar'}

@@ -39,9 +39,11 @@ export default function Entrar() {
     <div className="max-w-md mx-auto">
       <div className="card p-6">
         <div className="flex justify-center mb-4"><img src="/logo-fpet.jpg" alt="FPET" className="h-16 object-contain" /></div>
-        <h1 className="text-xl font-bold text-center mb-1">{modo === 'entrar' ? 'Acesso dos clubes e da federação' : 'Criar acesso'}</h1>
+        <h1 className="text-xl font-bold text-center mb-1">{modo === 'entrar' ? 'Entrar na FPET' : 'Criar acesso'}</h1>
         <p className="text-sm text-slate-500 text-center mb-5">
-          {modo === 'entrar' ? 'Para acompanhar ranking e chaves não é preciso entrar.' : 'Após o cadastro, a federação libera o seu acesso ao clube.'}
+          {modo === 'entrar'
+            ? 'Atletas, academias e federação. Para ver ranking, chaves e eventos não é preciso entrar.'
+            : 'Atleta: depois de entrar, informe CPF e nascimento para acessar seus resultados. Academia: a federação libera o acesso.'}
         </p>
         <form onSubmit={enviar} className="space-y-3">
           {modo === 'cadastrar' && <Campo label="Nome"><input className="input" value={nome} onChange={(e) => setNome(e.target.value)} required /></Campo>}

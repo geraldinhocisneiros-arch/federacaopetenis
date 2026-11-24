@@ -3,24 +3,29 @@ import { supabase } from '../lib/supabase'
 import { ok, useAsync } from '../lib/useAsync'
 import type { Categoria, PartidaDetalhe, Publicacao, RankingLinha } from '../lib/types'
 import { CardPublicacao } from './Noticias'
+import { CardEvento } from './Eventos'
+import type { EventoLista } from '../lib/types'
 import { AoVivo, Spinner, Vazio } from '../components/ui'
 import { CardTorneio, type TorneioComClube } from './Torneios'
 
 export default function Home() {
   const dados = useAsync(async () => {
-    const [t, c, v, n] = await Promise.all([
+    const hoje = new Date().toISOString().slice(0, 10)
+    const [t, c, v, n, ev] = await Promise.all([
       supabase.from('torneios').select('*, clubes(id,nome,sigla)').in('status', ['inscricoes', 'em_andamento']).order('data_inicio'),
       supabase.from('categorias').select('*').eq('ativa', true).order('ordem').order('nome').limit(4),
       supabase.from('partidas_detalhe').select('*').eq('em_quadra', true).limit(12),
       supabase.from('publicacoes').select('*').eq('publicado', true)
         .order('destaque', { ascending: false }).order('publicado_em', { ascending: false }).limit(3),
+      supabase.from('eventos_lista').select('*').eq('status', 'publicado')
+        .or(`data_fim.gte.${hoje},and(data_fim.is.null,data_inicio.gte.${hoje})`).order('data_inicio').limit(3),
     ])
     const cats = ok(c) as Categoria[]
     const rankings = await Promise.all(cats.map(async (cat) => ({
       cat,
       linhas: (ok(await supabase.rpc('ranking_categoria', { p_categoria: cat.id })) as RankingLinha[]).slice(0, 5),
     })))
-    return { torneios: ok(t) as TorneioComClube[], rankings, aoVivo: ok(v) as PartidaDetalhe[], noticias: ok(n) as Publicacao[] }
+    return { torneios: ok(t) as TorneioComClube[], rankings, aoVivo: ok(v) as PartidaDetalhe[], noticias: ok(n) as Publicacao[], eventos: ok(ev) as EventoLista[] }
   }, [])
 
   return (
@@ -52,6 +57,16 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
+            </section>
+          )}
+
+          {dados.data.eventos.length > 0 && (
+            <section>
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-bold text-xl">Próximos cursos e eventos</h2>
+                <Link to="/eventos" className="link text-sm">Agenda completa →</Link>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{dados.data.eventos.map((e) => <CardEvento key={e.id} e={e} />)}</div>
             </section>
           )}
 
