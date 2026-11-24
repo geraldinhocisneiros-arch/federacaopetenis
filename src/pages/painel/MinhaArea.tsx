@@ -8,6 +8,7 @@ import { formatarData, periodo } from '../../lib/tenis'
 import type { Atleta, AtletaContato, Clube, LancamentoDetalhe, SolicitacaoAtleta, StatusFiliacao } from '../../lib/types'
 import { Aviso, Avatar, Campo, Erro, Spinner, Tabs, Vazio } from '../../components/ui'
 import EstatisticasAtleta from '../../components/EstatisticasAtleta'
+import EnviarArquivo from '../../components/EnviarArquivo'
 
 type Aba = 'estatisticas' | 'dados' | 'cobrancas' | 'eventos'
 
@@ -132,7 +133,7 @@ function MeusDados({ a, onSalvo }: { a: Atleta; onSalvo: () => void }) {
         <Campo label="Cidade"><input className="input" value={f.cidade} onChange={(e) => set('cidade', e.target.value)} /></Campo>
         <Campo label="WhatsApp"><input className="input" value={f.tel} onChange={(e) => set('tel', e.target.value)} /></Campo>
         <Campo label="E-mail de contato"><input type="email" className="input" value={f.email} onChange={(e) => set('email', e.target.value)} /></Campo>
-        <div className="sm:col-span-2"><Campo label="URL da foto"><input className="input" value={f.foto} onChange={(e) => set('foto', e.target.value)} placeholder="https://…" /></Campo></div>
+        <div className="sm:col-span-2"><span className="label">Foto</span><EnviarArquivo pasta="atletas" redondo tamanhoMax={600} valor={f.foto} onChange={(u) => set('foto', u ?? '')} /></div>
       </div>
       <p className="text-xs text-slate-500">Nome, nascimento, CPF e academia só a federação ou a sua academia alteram.</p>
       <Erro msg={erro} />
