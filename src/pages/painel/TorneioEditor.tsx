@@ -76,7 +76,7 @@ function Dados({ d, onSalvo }: { d: DadosTorneio; onSalvo: () => void }) {
     const { error } = await supabase.from('torneios').update({
       nome: f.nome, descricao: f.descricao, local: f.local, data_inicio: f.data_inicio || null, data_fim: f.data_fim || null,
       status: f.status, pontua_ranking: f.pontua_ranking, tabela_pontuacao_id: f.tabela_pontuacao_id,
-      info_inscricao: f.info_inscricao, regulamento: f.regulamento, ...(isAdmin ? { clube_id: f.clube_id } : {}),
+      info_inscricao: f.info_inscricao, regulamento: f.regulamento, inscricao_recebedor: f.inscricao_recebedor, ...(isAdmin ? { clube_id: f.clube_id } : {}),
     }).eq('id', f.id)
     if (error) setErro(msgErro(error))
     else { setMsg('Salvo.'); onSalvo() }
@@ -123,9 +123,15 @@ function Dados({ d, onSalvo }: { d: DadosTorneio; onSalvo: () => void }) {
             <input type="checkbox" checked={f.pontua_ranking} onChange={(e) => set('pontua_ranking', e.target.checked)} disabled={!isAdmin} />
             Vale pontos para o ranking
           </label>
+          <Campo label="Quem recebe as inscrições" dica="Define quem dá baixa nas cobranças de inscrição geradas automaticamente.">
+            <select className="input" value={f.inscricao_recebedor} onChange={(e) => set('inscricao_recebedor', e.target.value)} disabled={!isAdmin}>
+              <option value="clube">O clube organizador</option>
+              <option value="federacao">A federação</option>
+            </select>
+          </Campo>
         </div>
         <Campo label="Descrição"><textarea className="input" rows={2} value={f.descricao ?? ''} onChange={(e) => set('descricao', e.target.value)} /></Campo>
-        <Campo label="Inscrições (valores, prazo, como pagar)" dica="Texto livre. O pagamento é feito diretamente com o clube.">
+        <Campo label="Inscrições (valores, prazo, como pagar)" dica="Texto livre: prazo, chave PIX, dados para pagamento. A taxa de cada categoria é definida na aba 2.">
           <textarea className="input" rows={3} value={f.info_inscricao ?? ''} onChange={(e) => set('info_inscricao', e.target.value)} />
         </Campo>
         <Campo label="Regulamento"><textarea className="input" rows={4} value={f.regulamento ?? ''} onChange={(e) => set('regulamento', e.target.value)} /></Campo>
@@ -185,6 +191,11 @@ function Encerramento({ d, onMudou }: { d: DadosTorneio; onMudou: () => void }) 
           {isAdmin && status === 'encerrado' && (
             <button className="btn-ball" disabled={ocupado} onClick={() => rpc('homologar_torneio', 'Homologar e lançar os pontos no ranking?')}>
               Homologar e atualizar ranking
+            </button>
+          )}
+          {isAdmin && ['encerrado', 'homologado'].includes(status) && (
+            <button className="btn-ghost" disabled={ocupado} onClick={() => rpc('gerar_taxa_federacao_torneio', 'Gerar a cobrança da taxa federativa (nº de inscrições × taxa configurada no Financeiro) para o clube organizador?')}>
+              Gerar taxa federativa
             </button>
           )}
           {isAdmin && status === 'homologado' && (

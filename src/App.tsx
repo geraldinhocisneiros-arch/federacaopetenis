@@ -9,6 +9,8 @@ import AtletaPagina from './pages/Atleta'
 import Clubes from './pages/Clubes'
 import ClubePagina from './pages/Clube'
 import Entrar from './pages/Entrar'
+import Noticias from './pages/Noticias'
+import Noticia from './pages/Noticia'
 import Painel from './pages/painel/Painel'
 
 export default function App() {
@@ -23,6 +25,8 @@ export default function App() {
         <Route path="atletas/:id" element={<AtletaPagina />} />
         <Route path="clubes" element={<Clubes />} />
         <Route path="clubes/:id" element={<ClubePagina />} />
+        <Route path="noticias" element={<Noticias />} />
+        <Route path="noticias/:id" element={<Noticia />} />
         <Route path="entrar" element={<Entrar />} />
         <Route path="painel/*" element={<Painel />} />
         <Route path="*" element={<div className="py-20 text-center text-slate-500">Página não encontrada.</div>} />

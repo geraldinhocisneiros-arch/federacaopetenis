@@ -7,7 +7,8 @@ const links = [
   { to: '/ranking', rotulo: 'Ranking' },
   { to: '/torneios', rotulo: 'Torneios' },
   { to: '/atletas', rotulo: 'Atletas' },
-  { to: '/clubes', rotulo: 'Clubes' },
+  { to: '/clubes', rotulo: 'Academias' },
+  { to: '/noticias', rotulo: 'Notícias' },
 ]
 
 export default function Layout() {

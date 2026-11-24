@@ -1,23 +1,26 @@
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { ok, useAsync } from '../lib/useAsync'
-import type { Categoria, PartidaDetalhe, RankingLinha } from '../lib/types'
+import type { Categoria, PartidaDetalhe, Publicacao, RankingLinha } from '../lib/types'
+import { CardPublicacao } from './Noticias'
 import { AoVivo, Spinner, Vazio } from '../components/ui'
 import { CardTorneio, type TorneioComClube } from './Torneios'
 
 export default function Home() {
   const dados = useAsync(async () => {
-    const [t, c, v] = await Promise.all([
+    const [t, c, v, n] = await Promise.all([
       supabase.from('torneios').select('*, clubes(id,nome,sigla)').in('status', ['inscricoes', 'em_andamento']).order('data_inicio'),
       supabase.from('categorias').select('*').eq('ativa', true).order('ordem').order('nome').limit(4),
       supabase.from('partidas_detalhe').select('*').eq('em_quadra', true).limit(12),
+      supabase.from('publicacoes').select('*').eq('publicado', true)
+        .order('destaque', { ascending: false }).order('publicado_em', { ascending: false }).limit(3),
     ])
     const cats = ok(c) as Categoria[]
     const rankings = await Promise.all(cats.map(async (cat) => ({
       cat,
       linhas: (ok(await supabase.rpc('ranking_categoria', { p_categoria: cat.id })) as RankingLinha[]).slice(0, 5),
     })))
-    return { torneios: ok(t) as TorneioComClube[], rankings, aoVivo: ok(v) as PartidaDetalhe[] }
+    return { torneios: ok(t) as TorneioComClube[], rankings, aoVivo: ok(v) as PartidaDetalhe[], noticias: ok(n) as Publicacao[] }
   }, [])
 
   return (
@@ -49,6 +52,16 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
+            </section>
+          )}
+
+          {dados.data.noticias.length > 0 && (
+            <section>
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-bold text-xl">Notícias</h2>
+                <Link to="/noticias" className="link text-sm">Todas →</Link>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{dados.data.noticias.map((p) => <CardPublicacao key={p.id} p={p} />)}</div>
             </section>
           )}
 
