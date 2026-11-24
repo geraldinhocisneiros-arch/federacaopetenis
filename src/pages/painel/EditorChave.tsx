@@ -148,7 +148,18 @@ function PartidaModal({ p, inscricoes, rotuloRodada, onFechar, onMudou }: {
   async function salvarResultado() {
     setErro(null); setOk(null)
     if (!vencedor) { setErro('Informe o vencedor.'); return }
-    if (tipo === 'normal' && placar.length < 2) { setErro('Informe o placar (ao menos 2 sets).'); return }
+    if (tipo !== 'wo') {
+      const incompleto = sets.some(([a, b]) => (a === '') !== (b === ''))
+      if (incompleto) { setErro('Preencha os dois lados de cada set.'); return }
+      if (!placar.length) { setErro(tipo === 'normal' ? 'Informe o placar. Só W.O. pode ficar sem placar.' : 'Informe o placar no momento da desistência.'); return }
+    }
+    if (tipo === 'normal') {
+      const empate = placar.findIndex(([a, b]) => a === b)
+      if (empate >= 0) { setErro(`O ${empate + 1}º set está empatado.`); return }
+      const v = vencedorPeloPlacar(placar)
+      if (!v) { setErro('O placar está empatado em sets: falta o set decisivo.'); return }
+      if ((v === 1 ? p.inscricao1_id : p.inscricao2_id) !== vencedor) { setErro('O placar não confere com o vencedor escolhido.'); return }
+    }
     const { error } = await supabase.rpc('registrar_resultado', {
       p_partida: p.id, p_vencedor: vencedor, p_placar: tipo === 'wo' ? [] : placar, p_tipo: tipo,
     })
@@ -229,6 +240,11 @@ function PartidaModal({ p, inscricoes, rotuloRodada, onFechar, onMudou }: {
                       ))}
                     </tbody>
                   </table>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {tipo === 'normal'
+                      ? 'Placar obrigatório. Pro set: preencha só o 1º set. Super tiebreak: 3ª coluna (ex.: 10 x 8).'
+                      : 'Informe o placar no momento em que o jogo parou (ex.: 6/4 2/1).'}
+                  </p>
                 </div>
               )}
               <div>

@@ -45,7 +45,7 @@ do $$ declare p record; first boolean := true; begin
   end loop; end $$;
 \echo '--- teste desfazer final e relançar'
 select desfazer_resultado((select id from partidas where rodada=4));
-select registrar_resultado((select id from partidas where rodada=4),(select inscricao2_id from partidas where rodada=4),'[[4,6],[7,6],[10,8]]','normal');
+select registrar_resultado((select id from partidas where rodada=4),(select inscricao2_id from partidas where rodada=4),'[[6,4],[6,7],[8,10]]','normal');
 select encerrar_torneio('22222222-2222-2222-2222-222222222222');
 \set ON_ERROR_STOP 0
 select homologar_torneio('22222222-2222-2222-2222-222222222222');
