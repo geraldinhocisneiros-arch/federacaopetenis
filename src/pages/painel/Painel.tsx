@@ -120,10 +120,10 @@ export default function Painel() {
   )
 
   return (
-    <div className="lg:grid lg:grid-cols-[230px_1fr] lg:gap-8">
-      {/* Lateral (computador) */}
-      <aside className="hidden lg:block">
-        <div className="sticky top-24 space-y-4 max-h-[calc(100vh-7rem)] overflow-y-auto pb-4">
+    <div className="lg:flex min-h-[calc(100vh-68px)]">
+      {/* Lateral (computador), encostada na borda esquerda */}
+      <aside className="hidden lg:block w-64 shrink-0 bg-white border-r border-slate-200">
+        <div className="sticky top-[68px] max-h-[calc(100vh-68px)] overflow-y-auto px-3 py-6 space-y-4">
           <div className="px-3">
             <div className="font-extrabold text-navy-900 truncate">{perfil?.nome || session.user.email}</div>
             <div className="text-xs text-slate-500">{papel}</div>
@@ -132,6 +132,8 @@ export default function Painel() {
         </div>
       </aside>
 
+      <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+      <div className="max-w-6xl">
       {/* Celular: botão que abre o menu */}
       <div className="lg:hidden mb-4">
         <button className="card w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer" onClick={() => setMenuAberto(!menuAberto)}>
@@ -174,6 +176,8 @@ export default function Painel() {
             </>
           )}
         </Routes>
+      </div>
+      </div>
       </div>
     </div>
   )
