@@ -21,6 +21,9 @@ export default function Layout() {
   const navCls = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-2 rounded-lg text-sm font-semibold transition ${isActive ? 'bg-white/15 text-white' : 'text-white/80 hover:text-white hover:bg-white/10'}`
 
+  // O painel tem layout próprio (menu lateral com logo); sem cabeçalho e rodapé do site
+  if (noPainel) return <div className="min-h-screen"><Outlet /></div>
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-navy-800 text-white sticky top-0 z-40 shadow">
@@ -61,7 +64,7 @@ export default function Layout() {
         </div>
       )}
 
-      <main className={`flex-1 w-full ${noPainel ? 'max-w-7xl' : 'max-w-6xl'} mx-auto px-4 py-6 sm:py-8`}>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:py-8">
         <Outlet />
       </main>
 
