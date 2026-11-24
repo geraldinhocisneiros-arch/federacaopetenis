@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { supabase, msgErro } from '../../lib/supabase'
+import { ok, useAsync } from '../../lib/useAsync'
+import { STATUS_LANC, moeda } from '../../lib/financeiro'
+import type { LancamentoDetalhe } from '../../lib/types'
+import LancamentoModal from './LancamentoModal'
 import type { DadosTorneio } from '../../lib/torneio'
 import type { Atleta } from '../../lib/types'
 import { Aviso, Erro, Vazio } from '../../components/ui'
@@ -11,6 +15,11 @@ export default function EditorInscricoes({ d, onMudou }: { d: DadosTorneio; onMu
   const [erro, setErro] = useState<string | null>(null)
   const [primeiro, setPrimeiro] = useState<Atleta | null>(null) // duplas: 1º atleta escolhido
   const [novoNome, setNovoNome] = useState<string | null>(null)
+  const [lanc, setLanc] = useState<string | null>(null)
+  const cobr = useAsync(async () => ok(await supabase.from('fin_lancamentos_detalhe')
+    .select('*').eq('torneio_id', d.torneio.id).eq('categoria', 'inscricao_torneio').neq('status', 'cancelado')) as LancamentoDetalhe[],
+  [d.torneio.id, d.inscricoes.length])
+  const cobrancasDe = (inscId: string) => (cobr.data ?? []).filter((l) => l.inscricao_id === inscId)
   const tc = d.categorias.find((c) => c.id === (sel ?? d.categorias[0]?.id))
   if (!tc) return <div className="card"><Vazio>Cadastre as categorias do torneio primeiro.</Vazio></div>
 
@@ -60,7 +69,7 @@ export default function EditorInscricoes({ d, onMudou }: { d: DadosTorneio; onMu
       <div className="card">
         {!lista.length ? <Vazio>Nenhum inscrito nesta categoria.</Vazio> : (
           <table className="table">
-            <thead><tr><th>#</th><th>{duplas ? 'Dupla' : 'Atleta'}</th><th className="hidden sm:table-cell">Clube</th><th>Cabeça</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>{duplas ? 'Dupla' : 'Atleta'}</th><th className="hidden sm:table-cell">Clube</th><th>Cabeça</th>{Number(tc.taxa_inscricao) > 0 && <th>Pagamento</th>}<th></th></tr></thead>
             <tbody>
               {lista.map((i, n) => (
                 <tr key={i.id}>
@@ -68,6 +77,17 @@ export default function EditorInscricoes({ d, onMudou }: { d: DadosTorneio; onMu
                   <td className="font-medium">{i.nome_exibicao}</td>
                   <td className="hidden sm:table-cell text-slate-500">{i.clube_nome ?? '—'}</td>
                   <td>{i.cabeca ? <span className="badge bg-ball text-navy-900">{i.cabeca}</span> : ''}</td>
+                  {Number(tc.taxa_inscricao) > 0 && (
+                    <td className="whitespace-nowrap">
+                      {cobrancasDe(i.id).map((l) => (
+                        <button key={l.id} className={`badge ${STATUS_LANC[l.status].cls} cursor-pointer mr-1`} onClick={() => setLanc(l.id)}
+                          title={`${l.atleta_nome} · ${moeda(l.valor_devido)}`}>
+                          {duplas ? `${(l.atleta_nome ?? '').split(' ')[0]}: ` : ''}{STATUS_LANC[l.status].rotulo}
+                        </button>
+                      ))}
+                      {!cobrancasDe(i.id).length && <span className="text-xs text-slate-400">—</span>}
+                    </td>
+                  )}
                   <td className="text-right">{!travado && <button className="btn-danger btn-sm" onClick={() => remover(i.id)}>Remover</button>}</td>
                 </tr>
               ))}
@@ -76,6 +96,10 @@ export default function EditorInscricoes({ d, onMudou }: { d: DadosTorneio; onMu
         )}
       </div>
 
+      {lanc && <LancamentoModal id={lanc} onFechar={() => setLanc(null)} onMudou={() => cobr.reload(true)} />}
+      {Number(tc.taxa_inscricao) > 0 && (
+        <p className="text-xs text-slate-500">Taxa de inscrição nesta categoria: {moeda(tc.taxa_inscricao)} por atleta. Clique na situação do pagamento para dar baixa.</p>
+      )}
       {novoNome !== null && (
         <AtletaForm nomeInicial={novoNome} onFechar={() => setNovoNome(null)}
           onSalvo={(a) => { setNovoNome(null); inscrever(a) }} />

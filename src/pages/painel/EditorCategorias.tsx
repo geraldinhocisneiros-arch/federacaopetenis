@@ -3,6 +3,7 @@ import { supabase, msgErro } from '../../lib/supabase'
 import { ok, useAsync } from '../../lib/useAsync'
 import { useAuth } from '../../lib/auth'
 import { FASES, GENERO } from '../../lib/tenis'
+import { lerValor, moeda } from '../../lib/financeiro'
 import type { DadosTorneio, TCComCategoria } from '../../lib/torneio'
 import type { Categoria, TabelaPontuacao, TorneioCategoria } from '../../lib/types'
 import { Campo, Erro, Modal, Vazio } from '../../components/ui'
@@ -61,7 +62,7 @@ export default function EditorCategorias({ d, onMudou }: { d: DadosTorneio; onMu
                   <div className="font-semibold">{tc.categorias.nome} <span className="text-xs text-slate-400">{GENERO[tc.categorias.genero]}</span></div>
                   <div className="text-xs text-slate-500">
                     {tc.formato === 'eliminatoria' ? 'Eliminatória simples' : tc.formato === 'grupos' ? 'Fase de grupos' : 'Eliminatória + consolação'}
-                    {' · '}{tc.formato_partida}{tc.valor_inscricao ? ` · ${tc.valor_inscricao}` : ''} · {n} inscrito(s)
+                    {' · '}{tc.formato_partida}{Number(tc.taxa_inscricao) > 0 ? ` · ${moeda(tc.taxa_inscricao)}` : ''}{tc.valor_inscricao ? ` · ${tc.valor_inscricao}` : ''} · {n} inscrito(s)
                   </div>
                 </div>
                 {!bloqueado && (
@@ -93,7 +94,7 @@ function ConfigTC({ tc, tabelas, isAdmin, onFechar, onSalvo }: {
   async function salvar(e: React.FormEvent) {
     e.preventDefault()
     const { error } = await supabase.from('torneio_categorias').update({
-      formato: f.formato, formato_partida: f.formato_partida, valor_inscricao: f.valor_inscricao || null,
+      formato: f.formato, formato_partida: f.formato_partida, valor_inscricao: f.valor_inscricao || null, taxa_inscricao: lerValor(String(f.taxa_inscricao ?? 0)),
       num_cabecas: f.num_cabecas, bye_conta_vitoria: f.bye_conta_vitoria,
       wo_vitoria_conta_a_partir: f.wo_vitoria_conta_a_partir, wo_perdedor_pontua: f.wo_perdedor_pontua,
       ...(isAdmin ? { tabela_pontuacao_id: f.tabela_pontuacao_id } : {}),
@@ -120,8 +121,11 @@ function ConfigTC({ tc, tabelas, isAdmin, onFechar, onSalvo }: {
               <option value="Melhor de 3 sets" />
             </datalist>
           </Campo>
-          <Campo label="Valor da inscrição" dica="Apenas informativo.">
-            <input className="input" value={f.valor_inscricao ?? ''} onChange={(e) => set('valor_inscricao', e.target.value)} placeholder="Ex.: R$ 120,00" />
+          <Campo label="Taxa de inscrição (R$)" dica="Gera uma cobrança por atleta inscrito. 0 = sem cobrança.">
+            <input className="input" inputMode="decimal" value={String(f.taxa_inscricao ?? 0).replace('.', ',')} onChange={(e) => set('taxa_inscricao', e.target.value)} />
+          </Campo>
+          <Campo label="Observação sobre a inscrição" dica="Texto livre exibido no site (ex.: desconto para sócios).">
+            <input className="input" value={f.valor_inscricao ?? ''} onChange={(e) => set('valor_inscricao', e.target.value)} placeholder="Ex.: 2ª categoria com 50% de desconto" />
           </Campo>
           <Campo label="Cabeças de chave" dica="Vazio = automático pelo tamanho da chave (8→2, 16→4, 32→8, 64→16).">
             <input type="number" min={0} className="input" value={f.num_cabecas ?? ''} onChange={(e) => set('num_cabecas', e.target.value === '' ? null : Number(e.target.value))} />

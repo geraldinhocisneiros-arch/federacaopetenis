@@ -10,6 +10,10 @@ import PainelPontuacao from './Pontuacao'
 import PainelRanking from './RankingAdmin'
 import PainelUsuarios from './Usuarios'
 import MinhaConta from './MinhaConta'
+import PainelVisao from './Visao'
+import PainelFiliacao from './Filiacao'
+import PainelFinanceiro from './Financeiro'
+import PainelPublicacoes from './Publicacoes'
 
 export default function Painel() {
   const { session, perfil, carregando, isAdmin, isGestor, sair } = useAuth()
@@ -17,9 +21,13 @@ export default function Painel() {
   if (!session) return <Navigate to="/entrar" replace />
 
   const itens = [
+    { to: 'adm', rotulo: 'Área ADM', ok: isAdmin },
     { to: 'torneios', rotulo: 'Torneios', ok: isGestor },
     { to: 'atletas', rotulo: 'Atletas', ok: isGestor },
-    { to: 'clubes', rotulo: isAdmin ? 'Clubes' : 'Meu clube', ok: isGestor },
+    { to: 'clubes', rotulo: isAdmin ? 'Academias' : 'Minha academia', ok: isGestor },
+    { to: 'filiacao', rotulo: 'Filiação', ok: isGestor },
+    { to: 'financeiro', rotulo: 'Financeiro', ok: isGestor },
+    { to: 'publicacoes', rotulo: 'Publicações', ok: isAdmin },
     { to: 'categorias', rotulo: 'Categorias', ok: isAdmin },
     { to: 'pontuacao', rotulo: 'Pontuação', ok: isAdmin },
     { to: 'ranking', rotulo: 'Ranking', ok: isAdmin },
@@ -56,14 +64,18 @@ export default function Painel() {
             ))}
           </nav>
           <Routes>
-            <Route index element={<Navigate to="torneios" replace />} />
+            <Route index element={<Navigate to={isAdmin ? 'adm' : 'torneios'} replace />} />
             <Route path="torneios" element={<PainelTorneios />} />
             <Route path="torneios/:id" element={<TorneioEditor />} />
             <Route path="atletas" element={<PainelAtletas />} />
             <Route path="clubes" element={<PainelClubes />} />
             <Route path="conta" element={<MinhaConta />} />
+            <Route path="filiacao" element={<PainelFiliacao />} />
+            <Route path="financeiro" element={<PainelFinanceiro />} />
             {isAdmin && (
               <>
+                <Route path="adm" element={<PainelVisao />} />
+                <Route path="publicacoes" element={<PainelPublicacoes />} />
                 <Route path="categorias" element={<PainelCategorias />} />
                 <Route path="pontuacao" element={<PainelPontuacao />} />
                 <Route path="ranking" element={<PainelRanking />} />

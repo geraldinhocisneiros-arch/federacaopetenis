@@ -26,6 +26,8 @@ export interface Clube {
   tipo_piso: string | null
   logo_url: string | null
   observacoes: string | null
+  cnpj: string | null
+  razao_social: string | null
   ativo: boolean
 }
 
@@ -78,6 +80,7 @@ export interface Torneio {
   pontua_ranking: boolean
   tabela_pontuacao_id: string | null
   info_inscricao: string | null
+  inscricao_recebedor: 'clube' | 'federacao'
   regulamento: string | null
   homologado_em: string | null
 }
@@ -89,6 +92,7 @@ export interface TorneioCategoria {
   formato: 'eliminatoria' | 'eliminatoria_consolacao' | 'grupos'
   formato_partida: string
   valor_inscricao: string | null
+  taxa_inscricao: number
   num_cabecas: number | null
   bye_conta_vitoria: boolean
   wo_vitoria_conta_a_partir: Fase | null
@@ -159,4 +163,137 @@ export interface RankingLinha {
   pontos: number
   torneios: number
   posicao_anterior: number | null
+}
+
+// ---------------------------------------------------------------------
+// Filiação, financeiro e publicações
+// ---------------------------------------------------------------------
+export type TipoFiliacao = 'atleta' | 'academia'
+export type StatusFiliacao = 'pendente' | 'ativa' | 'isenta' | 'cancelada'
+export type StatusLancamento = 'aberto' | 'pago' | 'isento' | 'cancelado'
+export type FormaPagamento = 'pix' | 'boleto' | 'dinheiro' | 'transferencia' | 'cartao' | 'credito' | 'voucher' | 'outro'
+export type CategoriaLancamento =
+  | 'filiacao_atleta' | 'filiacao_academia' | 'inscricao_torneio' | 'taxa_torneio' | 'patrocinio'
+  | 'arbitragem' | 'premiacao' | 'estrutura' | 'administrativo' | 'outros'
+
+export interface Configuracoes {
+  id: number
+  janela_semanas: number | null
+  melhores_resultados: number | null
+  criterio_desempate: string | null
+  observacoes: string | null
+  exigir_filiacao_inscricao: boolean
+  taxa_federacao_inscricao: number
+  instrucoes_pagamento: string | null
+}
+
+export interface Anuidade {
+  id: string
+  ano: number
+  tipo: TipoFiliacao
+  nome: string
+  valor: number
+  vencimento: string | null
+  ativa: boolean
+}
+
+export interface FiliacaoDetalhe {
+  id: string
+  tipo: TipoFiliacao
+  atleta_id: string | null
+  clube_id: string | null
+  anuidade_id: string | null
+  ano: number
+  numero: string | null
+  status: StatusFiliacao
+  ativada_em: string | null
+  observacoes: string | null
+  nome: string
+  atleta_clube_id: string | null
+  atleta_clube_nome: string | null
+  anuidade_nome: string | null
+  lancamento_id: string | null
+  valor_devido: number | null
+  vencimento: string | null
+  status_pagamento: StatusLancamento | null
+}
+
+export interface Lancamento {
+  id: string
+  natureza: 'receber' | 'pagar'
+  categoria: CategoriaLancamento
+  descricao: string
+  recebedor_clube_id: string | null
+  atleta_id: string | null
+  clube_id: string | null
+  favorecido: string | null
+  filiacao_id: string | null
+  inscricao_id: string | null
+  torneio_id: string | null
+  valor: number
+  desconto: number
+  voucher_id: string | null
+  vencimento: string | null
+  status: StatusLancamento
+  valor_pago: number | null
+  credito_usado: number
+  data_pagamento: string | null
+  forma_pagamento: FormaPagamento | null
+  comprovante_url: string | null
+  motivo_isencao: string | null
+  observacoes: string | null
+  baixado_em: string | null
+  gateway_url: string | null
+  criado_em: string
+}
+
+export interface LancamentoDetalhe extends Lancamento {
+  valor_devido: number
+  vencido: boolean
+  atleta_nome: string | null
+  clube_nome: string | null
+  recebedor_nome: string | null
+  torneio_nome: string | null
+  voucher_codigo: string | null
+  pessoa: string | null
+}
+
+export interface Voucher {
+  id: string
+  codigo: string
+  descricao: string | null
+  tipo: 'percentual' | 'valor'
+  valor: number
+  categorias: CategoriaLancamento[] | null
+  validade: string | null
+  usos_max: number | null
+  usos: number
+  emissor_clube_id: string | null
+  ativo: boolean
+}
+
+export interface SaldoCredito {
+  atleta_id: string | null
+  clube_id: string | null
+  emissor_clube_id: string | null
+  nome: string
+  emissor_nome: string | null
+  saldo: number
+  ultimo_movimento: string
+}
+
+export interface Publicacao {
+  id: string
+  titulo: string
+  tipo: 'noticia' | 'comunicado' | 'resultado' | 'regulamento' | 'edital'
+  resumo: string | null
+  conteudo: string | null
+  imagem_url: string | null
+  anexo_url: string | null
+  destaque: boolean
+  publicado: boolean
+  publicado_em: string | null
+  torneio_id: string | null
+  autor_id: string | null
+  criado_em: string
 }

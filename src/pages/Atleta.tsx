@@ -23,13 +23,15 @@ export default function AtletaPagina() {
   const { id } = useParams()
   const dados = useAsync(async () => {
     const atleta = ok(await supabase.from('atletas').select('*, clubes(*)').eq('id', id!).single()) as Atleta & { clubes: Clube | null }
-    const [rank, hist, insc, lanc] = await Promise.all([
+    const [rank, hist, insc, lanc, fil] = await Promise.all([
       supabase.rpc('ranking_do_atleta', { p_atleta: id }),
       supabase.from('ranking_historico').select('posicao,pontos,ranking_publicacoes(data,criado_em,categoria_id,descricao)').eq('atleta_id', id!),
       supabase.from('inscricoes')
         .select('id, torneio_categoria_id, torneio_categorias(tamanho_chave, categorias(nome), torneios(id,nome,data_inicio,status,clubes(nome)))')
         .or(`atleta_id.eq.${id},parceiro_id.eq.${id}`),
       supabase.from('ranking_lancamentos').select('torneio_categoria_id,pontos,fase').eq('atleta_id', id!).eq('tipo', 'torneio'),
+      supabase.from('filiacoes').select('ano,numero,status').eq('atleta_id', id!).in('status', ['ativa', 'isenta'])
+        .eq('ano', new Date().getFullYear()).maybeSingle(),
     ])
     const inscricoes = (ok(insc) as unknown as InscTorneio[]).filter((i) => i.torneio_categorias.torneios.status !== 'rascunho')
     const ids = inscricoes.map((i) => i.id)
@@ -46,12 +48,13 @@ export default function AtletaPagina() {
         (b.torneio_categorias.torneios.data_inicio ?? '').localeCompare(a.torneio_categorias.torneios.data_inicio ?? '')),
       partidas,
       lancamentos: ok(lanc) as Lanc[],
+      filiacao: fil.data as { ano: number; numero: string | null } | null,
     }
   }, [id])
 
   if (dados.loading) return <Spinner />
   if (dados.error || !dados.data) return <Erro msg={dados.error ?? 'Atleta não encontrado.'} />
-  const { atleta, ranking, historico, inscricoes, partidas, lancamentos } = dados.data
+  const { atleta, ranking, historico, inscricoes, partidas, lancamentos, filiacao } = dados.data
   const idsInsc = new Set(inscricoes.map((i) => i.id))
 
   const jogos = partidas.filter((p) => p.vencedor_id && p.tipo_resultado !== 'bye')
@@ -70,6 +73,11 @@ export default function AtletaPagina() {
         <Avatar nome={atleta.nome} url={atleta.foto_url} tamanho={72} />
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-extrabold">{atleta.nome}</h1>
+          {filiacao && (
+            <span className="badge bg-emerald-100 text-emerald-800 mt-1">
+              ✓ Filiado FPET {filiacao.ano}{filiacao.numero ? ` · nº ${filiacao.numero}` : ''}
+            </span>
+          )}
           <div className="text-sm text-slate-500">
             {atleta.clubes ? <Link className="link" to={`/clubes/${atleta.clube_id}`}>{atleta.clubes.nome}</Link> : 'Sem clube'}
             {atleta.cidade ? ` · ${atleta.cidade}` : ''}

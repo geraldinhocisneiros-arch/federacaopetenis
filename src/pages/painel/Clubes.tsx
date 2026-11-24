@@ -6,7 +6,7 @@ import type { Clube } from '../../lib/types'
 import { Campo, Erro, Modal, Spinner } from '../../components/ui'
 
 const CAMPOS: [keyof Clube, string, string?][] = [
-  ['nome', 'Nome'], ['sigla', 'Sigla'], ['responsavel', 'Responsável'], ['telefone', 'Telefone'],
+  ['nome', 'Nome'], ['sigla', 'Sigla'], ['razao_social', 'Razão social'], ['cnpj', 'CNPJ'], ['responsavel', 'Responsável'], ['telefone', 'Telefone'],
   ['email', 'E-mail'], ['instagram', 'Instagram'], ['site', 'Site'], ['endereco', 'Endereço'],
   ['bairro', 'Bairro'], ['cidade', 'Cidade'], ['tipo_piso', 'Tipo de piso', 'Saibro, rápida…'], ['logo_url', 'URL do logo'],
 ]
@@ -23,8 +23,8 @@ export default function PainelClubes() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">{isAdmin ? 'Clubes' : 'Meu clube'}</h2>
-        {isAdmin && <button className="btn-primary" onClick={() => setEditando({ ativo: true, cidade: 'Recife' })}>+ Novo clube</button>}
+        <h2 className="text-xl font-bold">{isAdmin ? 'Academias' : 'Minha academia'}</h2>
+        {isAdmin && <button className="btn-primary" onClick={() => setEditando({ ativo: true, cidade: 'Recife' })}>+ Nova academia</button>}
       </div>
       {lista.loading ? <Spinner /> : (
         <div className="card divide-y divide-slate-100">
@@ -54,7 +54,7 @@ function ClubeForm({ c, isAdmin, onFechar, onSalvo }: { c: Partial<Clube>; isAdm
     if (res.error) setErro(msgErro(res.error)); else onSalvo()
   }
   return (
-    <Modal aberto titulo={c.id ? 'Editar clube' : 'Novo clube'} onFechar={onFechar} largo>
+    <Modal aberto titulo={c.id ? 'Editar academia' : 'Nova academia'} onFechar={onFechar} largo>
       <form onSubmit={salvar} className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           {CAMPOS.map(([k, rot, ph]) => (

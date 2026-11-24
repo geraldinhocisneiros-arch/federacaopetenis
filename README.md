@@ -12,6 +12,10 @@ Sistema de ranking, torneios e chaves da FPET.
 | Site público | Qualquer pessoa | Ranking por categoria (com ▲▼), torneios, chaves e programação ao vivo, perfil do atleta (posição, gráfico de evolução, resultados), clubes |
 | Painel do clube | Usuário vinculado a um clube | Cria torneios do clube, escolhe categorias, inscreve atletas, sorteia a chave, define horários ("NÃO ANTES DAS 17h"), lança resultados, encerra o torneio |
 | Painel da federação | Admin | Tudo acima para todos os clubes + categorias oficiais, tabelas de pontuação, regras do ranking, importação do ranking inicial, homologação, usuários |
+| Área ADM | Admin | Visão geral: recebido/a receber/vencido, filiações do ano, torneios a homologar, taxas federativas pendentes |
+| Filiação | Admin (clubes consultam) | Anuidades por ano (atleta/academia), filiação individual ou em lote, nº de registro, situação pública no perfil do atleta |
+| Financeiro | Admin e clubes | Recebimentos, pagamentos, baixa (com crédito e pagamento a maior), estorno, isenção, vouchers, créditos. Clube dá baixa nas inscrições que ele recebe |
+| Publicações | Admin | Notícias, comunicados, resultados, regulamentos e editais em `/noticias` |
 
 ### Fluxo de um torneio
 1. Clube cria o torneio e adiciona as categorias (da lista oficial da federação).
@@ -38,7 +42,7 @@ npm run dev
 
 ### 1. Supabase
 1. Crie o projeto (região `sa-east-1`, São Paulo).
-2. Aplique a migração `supabase/migrations/20261123000001_esquema_inicial.sql`, pelo SQL Editor ou com `supabase db push`.
+2. Aplique as migrações de `supabase/migrations/` em ordem (pelo SQL Editor ou com `supabase db push`).
 3. Em *Authentication → URL Configuration*, coloque a URL do site do Cloudflare.
 4. Cadastre-se no site e torne-se administrador:
    ```sql
@@ -61,3 +65,10 @@ src/pages/painel/      painel do clube/federação
 src/components/        Chave (bracket), Programação, gráfico, UI
 src/lib/               cliente Supabase, auth, tipos, utilidades de tênis
 ```
+
+### Financeiro e inscrições
+- A taxa de inscrição (R$) é definida por categoria do torneio (aba 2). Cada atleta inscrito gera uma cobrança; em duplas, uma para cada.
+- Quem recebe (clube organizador ou federação) é definido no torneio. Quem recebe dá a baixa.
+- Inscrição removida: cobrança em aberto é cancelada; cobrança paga vira crédito do atleta.
+- Opcional (Financeiro → Configurações): exigir filiação ativa para inscrever e taxa federativa por inscrição.
+- **PIX/Boleto automático:** ainda não configurado. As cobranças já têm campos reservados (`gateway_*`) para a integração.
