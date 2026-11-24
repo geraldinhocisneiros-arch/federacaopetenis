@@ -4,11 +4,12 @@ import { ok, useAsync } from '../../lib/useAsync'
 import { useAuth } from '../../lib/auth'
 import type { Clube } from '../../lib/types'
 import { Campo, Erro, Modal, Spinner } from '../../components/ui'
+import EnviarArquivo from '../../components/EnviarArquivo'
 
 const CAMPOS: [keyof Clube, string, string?][] = [
   ['nome', 'Nome'], ['sigla', 'Sigla'], ['razao_social', 'Razão social'], ['cnpj', 'CNPJ'], ['responsavel', 'Responsável'], ['telefone', 'Telefone'],
   ['email', 'E-mail'], ['instagram', 'Instagram'], ['site', 'Site'], ['endereco', 'Endereço'],
-  ['bairro', 'Bairro'], ['cidade', 'Cidade'], ['tipo_piso', 'Tipo de piso', 'Saibro, rápida…'], ['logo_url', 'URL do logo'],
+  ['bairro', 'Bairro'], ['cidade', 'Cidade'], ['tipo_piso', 'Tipo de piso', 'Saibro, rápida…'],
 ]
 
 export default function PainelClubes() {
@@ -62,6 +63,7 @@ function ClubeForm({ c, isAdmin, onFechar, onSalvo }: { c: Partial<Clube>; isAdm
               <input className="input" required={k === 'nome'} placeholder={ph} value={(f[k] as string) ?? ''} onChange={(e) => setF({ ...f, [k]: e.target.value || null })} />
             </Campo>
           ))}
+          <div><span className="label">Logo</span><EnviarArquivo pasta="clubes" tamanhoMax={600} valor={f.logo_url} onChange={(u) => setF({ ...f, logo_url: u })} /></div>
           <Campo label="Nº de quadras">
             <input type="number" className="input" value={f.num_quadras ?? ''} onChange={(e) => setF({ ...f, num_quadras: e.target.value ? Number(e.target.value) : null })} />
           </Campo>

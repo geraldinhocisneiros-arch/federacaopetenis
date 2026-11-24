@@ -4,6 +4,7 @@ import { ok, useAsync } from '../../lib/useAsync'
 import { useAuth } from '../../lib/auth'
 import type { Atleta, AtletaContato, Clube } from '../../lib/types'
 import { Campo, Erro, Modal } from '../../components/ui'
+import EnviarArquivo from '../../components/EnviarArquivo'
 
 type Form = Partial<Atleta> & { contato: Partial<AtletaContato> }
 
@@ -70,7 +71,7 @@ export default function AtletaForm({ atleta, nomeInicial, onFechar, onSalvo }: {
             </select>
           </Campo>
           <Campo label="Cidade"><input className="input" value={f.cidade ?? ''} onChange={(e) => set('cidade', e.target.value)} /></Campo>
-          <Campo label="URL da foto"><input className="input" value={f.foto_url ?? ''} onChange={(e) => set('foto_url', e.target.value)} placeholder="https://…" /></Campo>
+          <div><span className="label">Foto</span><EnviarArquivo pasta="atletas" redondo tamanhoMax={600} valor={f.foto_url} onChange={(u) => set('foto_url', u)} /></div>
           <label className="flex items-center gap-2 text-sm font-medium mt-6">
             <input type="checkbox" checked={f.ativo ?? true} onChange={(e) => set('ativo', e.target.checked)} /> Ativo
           </label>

@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/auth'
 import { TIPOS_PUB, dataPub } from '../../lib/publicacoes'
 import type { Publicacao } from '../../lib/types'
 import { Campo, Erro, Modal, Spinner, Vazio } from '../../components/ui'
+import EnviarArquivo from '../../components/EnviarArquivo'
 
 export default function PainelPublicacoes() {
   const { session } = useAuth()
@@ -36,8 +37,8 @@ export default function PainelPublicacoes() {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-bold">Publicações</h2>
-        <button className="btn-primary" onClick={() => { setErro(null); setEditando({ tipo: 'noticia', publicado: false, destaque: false }) }}>+ Nova publicação</button>
+        <h2 className="text-xl font-bold">Notícias e publicações</h2>
+        <button className="btn-primary" onClick={() => { setErro(null); setEditando({ tipo: 'noticia', publicado: false, destaque: false }) }}>+ Nova notícia</button>
       </div>
       <p className="text-sm text-slate-500 mb-4">Notícias, comunicados, resultados, regulamentos e editais exibidos no site em <Link to="/noticias" className="link">Notícias</Link>.</p>
       <Erro msg={!editando ? erro : null} />
@@ -60,7 +61,7 @@ export default function PainelPublicacoes() {
         </div>
       )}
 
-      <Modal aberto={!!editando} titulo={f.id ? 'Editar publicação' : 'Nova publicação'} onFechar={() => setEditando(null)} largo>
+      <Modal aberto={!!editando} titulo={f.id ? 'Editar notícia' : 'Nova notícia'} onFechar={() => setEditando(null)} largo>
         <form onSubmit={(e) => { e.preventDefault(); salvar() }} className="space-y-3">
           <Campo label="Título"><input className="input" required value={f.titulo ?? ''} onChange={(e) => set('titulo', e.target.value)} /></Campo>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -74,8 +75,8 @@ export default function PainelPublicacoes() {
           <Campo label="Resumo" dica="Aparece na lista e na página inicial."><textarea className="input" rows={2} value={f.resumo ?? ''} onChange={(e) => set('resumo', e.target.value)} /></Campo>
           <Campo label="Texto" dica="Linhas em branco separam parágrafos."><textarea className="input" rows={10} value={f.conteudo ?? ''} onChange={(e) => set('conteudo', e.target.value)} /></Campo>
           <div className="grid sm:grid-cols-2 gap-3">
-            <Campo label="URL da imagem"><input className="input" value={f.imagem_url ?? ''} onChange={(e) => set('imagem_url', e.target.value || null)} placeholder="https://…" /></Campo>
-            <Campo label="URL do anexo (PDF, regulamento…)"><input className="input" value={f.anexo_url ?? ''} onChange={(e) => set('anexo_url', e.target.value || null)} placeholder="https://…" /></Campo>
+            <div><span className="label">Imagem de capa</span><EnviarArquivo pasta="publicacoes" valor={f.imagem_url} onChange={(u) => set('imagem_url', u)} /></div>
+            <div><span className="label">Anexo (PDF, regulamento…)</span><EnviarArquivo pasta="publicacoes" tipo="qualquer" valor={f.anexo_url} onChange={(u) => set('anexo_url', u)} /></div>
           </div>
           <Erro msg={erro} />
           <div className="flex flex-wrap justify-end gap-2">

@@ -9,6 +9,7 @@ import { periodo } from '../../lib/tenis'
 import type { Clube, Evento, EventoInscricao, EventoLista, Lancamento } from '../../lib/types'
 import { Campo, Erro, Modal, Spinner, Vazio } from '../../components/ui'
 import LancamentoModal from './LancamentoModal'
+import EnviarArquivo from '../../components/EnviarArquivo'
 
 export default function PainelEventos() {
   const { isAdmin, perfil } = useAuth()
@@ -108,7 +109,7 @@ function EventoForm({ ev, onFechar, onSalvo }: { ev: Partial<Evento>; onFechar: 
           <Campo label="Contato"><input {...txt('contato')} placeholder="WhatsApp, e-mail…" /></Campo>
         </div>
         <Campo label="Descrição"><textarea {...txt('descricao')} rows={5} /></Campo>
-        <Campo label="URL da imagem"><input {...txt('imagem_url')} placeholder="https://…" /></Campo>
+        <div><span className="label">Imagem de divulgação</span><EnviarArquivo pasta="eventos" valor={f.imagem_url} onChange={(u) => set('imagem_url', u)} /></div>
 
         <fieldset className="rounded-lg border border-slate-200 p-4 grid sm:grid-cols-2 gap-4">
           <legend className="label px-1">Inscrições</legend>
